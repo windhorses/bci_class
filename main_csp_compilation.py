@@ -9,6 +9,9 @@ import time
 from sklearn.svm import LinearSVC, SVC
 from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
+from sklearn import metrics
+import sklearn
+
 
 
 
@@ -87,7 +90,7 @@ class CSP_Model:
 		self.eval_time = 0
 		self.eval_trials = 0
 		
-	def run_csp(self):
+	def run_csp(self, ML_model):
 
 		################################ Training ############################################################################
 		start_train = time.time()
@@ -97,32 +100,53 @@ class CSP_Model:
 		else: 
 			w = generate_eye(self.train_data,self.train_label,self.filter_bank,self.time_windows)
 
-		import sklearn.model_selection
+		
 		# 2. Extract features for training 
 		feature_mat = extract_feature(self.train_data,w,self.filter_bank,self.time_windows)
 
 		X = feature_mat
 		y = self.train_label
 		X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
-########################################## Change to RandomForest
-		clf = RandomForestClassifier(n_estimators=20, random_state=0)
-		clf.fit(X_train, y_train)
-		y_pred = clf.predict(X_test)
-		from sklearn import metrics
 
-		print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))
-		print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred))
-		print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+		if ML_model == "RandomForestClassifier":
+			print("RandomForest Started")
+			clf = RandomForestClassifier()
+			clf.fit(X_train, y_train)
+		elif ML_model == "KNeighborsClassifier":
+			print("KNeighborsClassifier Started")
+			clf = sklearn.neighbors.KNeighborsClassifier()
+			clf.fit(X_train, y_train)
+
+		elif ML_model == "AdaBoostClassifier":
+			print("AdaBoostClassifier Started")
+			clf = sklearn.ensemble.AdaBoostClassifier()
+			clf.fit(X_train, y_train)
+
+		elif ML_model == "BaggingClassifier":
+			print("BaggingClassifier Started")
+			clf = sklearn.ensemble.BaggingClassifier()
+			clf.fit(X_train, y_train)
+		elif ML_model == "GaussianNB": 
+			print("GaussianNB Started")
+			clf = sklearn.naive_bayes.GaussianNB()
+			clf.fit(X_train, y_train)
+		elif ML_model == "LDA": 
+			print("LDA Started")
+			clf = sklearn.lda.LDA()
+			clf.fit(X_train, y_train)
+
+	
+			
+
 		
 		end_train = time.time()
 		self.train_time += end_train-start_train
 		self.train_trials += len(self.train_label)
 
-###############################################
 
 		################################# Evaluation ###################################################
 		
-		print("!!!!"*100 + "\n HERE IS AN IRRELEVANT PART \n\n\n\n" +"!!!!"*100 )
+		
 
 		start_eval = time.time()
 		eval_feature_mat = extract_feature(self.eval_data,w,self.filter_bank,self.time_windows)
@@ -162,56 +186,71 @@ class CSP_Model:
 
 def main():
 
-
-	model = CSP_Model()
-
-	print("Number of used features: "+ str(model.NO_features))
-
-	# success rate sum over all subjects 
-	success_tot_sum = 0
-
-	ML_algorithms = []
-
-	if model.crossvalidation:
-		print("Cross validation run")
-	else: 
-		print("Test data set")
-	start = time.time()
-
-	# Go through all subjects 
-	for model.subject in range(1,model.NO_subjects+1):
-
-		#print("Subject" + str(model.subject)+":")
-		
-
-		if model.crossvalidation:
-			success_sub_sum = 0 
-
-			for model.split in range(model.NO_splits):
-				model.load_data()
-				success_sub_sum += model.run_csp()
-				print(success_sub_sum/(model.split+1))
-			# average over all splits 
-			success_rate = success_sub_sum/model.NO_splits
-
-		else: 
-			# load Eval data 
-			model.load_data()
-			success_rate = model.run_csp()
-
-		print(success_rate)
-		success_tot_sum += success_rate 
+	all_ML_models = {"RandomForestClassifier": 1,
+					 "AdaBoostClassifier":     1,
+					 "BaggingClassifier" :     1,
+					 "KNeighborsClassifier" :  1,
+					 "GaussianNB": 			1, 
+					 "LDA" 		: 			1
 
 
-	# Average success rate over all subjects 
-	print("Average success rate: " + str(success_tot_sum/model.NO_subjects))
+	}
 
-	print("Training average time: " +  str(model.train_time/model.NO_subjects))
-	print("Evaluation average time: " +  str(model.eval_time/model.NO_subjects))
+	for ML_model in all_ML_models:
 
-	end = time.time()	
+		if all_ML_models[ML_model]:
 
-	print("Time elapsed [s] " + str(end - start))
+			model = CSP_Model()
+
+			print("Number of used features: "+ str(model.NO_features))
+
+			# success rate sum over all subjects 
+			success_tot_sum = 0
+
+			
+
+			if model.crossvalidation:
+				print("Cross validation run")
+			else: 
+				print("Test data set")
+			start = time.time()
+
+
+
+				# Go through all subjects 
+			for model.subject in range(1,model.NO_subjects+1):
+
+				#print("Subject" + str(model.subject)+":")
+				
+
+				if model.crossvalidation:
+					success_sub_sum = 0 
+
+					for model.split in range(model.NO_splits):
+						model.load_data()
+						success_sub_sum += model.run_csp(ML_model)
+						#print(success_sub_sum/(model.split+1))
+					# average over all splits 
+					success_rate = success_sub_sum/model.NO_splits
+
+				else: 
+					# load Eval data 
+					model.load_data()
+					success_rate = model.run_csp(ML_model)
+
+				print(success_rate)
+				success_tot_sum += success_rate 
+
+			print("*"*100 + " \n\n\n\n results for %s  \n\n\n\n" % (ML_model) +"*"*100 )
+			# Average success rate over all subjects 
+			print("Average success rate: " + str(success_tot_sum/model.NO_subjects))
+
+			print("Training average time: " +  str(model.train_time/model.NO_subjects))
+			print("Evaluation average time: " +  str(model.eval_time/model.NO_subjects))
+
+			end = time.time()	
+
+			print("Time elapsed [s] " + str(end - start))
 
 if __name__ == '__main__':
 	main()

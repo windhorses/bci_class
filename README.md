@@ -1,18 +1,53 @@
-# bci_class
+# Fast and Accurate Multiclass Inference for MI-BCIs Using Large Multiscale Temporal and Spectral Features
 
-Spring 2022 
+This is the code of an accepted conference paper submitted to EUSIPCO 2018. The preprint is available on this arXiv [link](https://arxiv.org/abs/1806.06823). If you are using this code please cite our paper. 
 
-Class: CS 91.3 at Swarthmore College
+## Getting Started
 
-Professor: Xiaodong Qu 
+First, download the source code.
+Then, download the dataset "Four class motor imagery (001-2014)" of the [BCI competition IV-2a](http://bnci-horizon-2020.eu/database/data-sets). Put all files of the dataset (A01T.mat-A09E.mat) into a subfolder within the project called 'dataset' or change self.data_path in main_csp and main_riemannian. 
 
-Student Researchers: Yang Windhorse & Nader Al-Madbouh 
+### Prerequisites
 
-Emails: ylhamo1@swarthmore.edu, nalmadb1@swarthmore.edu
+- python3
+- numpy
+- sklearn
+- pyriemann
+- scipy
 
+The packages can be installed easily with conda and the _config.yml file: 
+```
+$ conda env create -f _config.yml -n msenv
+$ source activate msenv 
+```
 
+### Recreate results
 
-This repo is a collection of changes made to existing research code. We ran machine learning algos (like LDA) on the code from https://github.com/MultiScale-BCI/IV-2a (associated research paper: Fast and Accurate Multiclass Inference for MI-BCIs Using Large Multiscale Temporal and Spectral Features). 
+For the recreation of the CSP results run main_csp.py. 
+Change self.svm_kernel for testing different kernels:
+- self.svm_kernel='linear'  -> self.svm_c = 0.05
+- self.svm_kernel='rbf'     -> self.svm_c = 20
+- self.svm_kernel='poly'    -> self.svm_c = 0.1
 
-We are grateful to researcher Michael Hersche, and student TAs Anika Rajamani and Emma Jin for their guidance. 
+```
+$ python3 main_csp.py
+```
+For the recreation of the Riemannian results run main_riemannian.py. 
+Change self.svm_kernel for testing different kernels:
+- self.svm_kernel='linear'  -> self.svm_c = 0.1
+- self.svm_kernel='rbf'     -> self.svm_c = 20
 
+Change self.riem_opt for testing different means:
+- self.riem_opt = "Riemann"
+- self.riem_opt = "Riemann_Euclid" 
+- self.riem_opt = "Whitened_Euclid"
+- self.riem_opt = "No_Adaptation"
+
+```
+$ python3 main_riemannian.py
+```
+
+## Authors
+
+* **Michael Hersche** - *Initial work* - [MHersche](https://github.com/MHersche)
+* **Tino Rellstab** - *Initial work* - [tinorellstab](https://github.com/tinorellstab)
