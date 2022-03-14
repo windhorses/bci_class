@@ -27,6 +27,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
+from sklearn.naive_bayes import GaussianNB
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from sklearn.svm import LinearSVC,SVC
 from sklearn.model_selection import KFold
@@ -114,7 +116,7 @@ class Riemannian_Model:
 			clf.fit(X_train, y_train)
 		elif ML_model == "LDA": 
 			print("LDA Started")
-			clf = sklearn.lda.LDA()
+			clf = LinearDiscriminantAnalysis()
 			clf.fit(X_train, y_train)
 		
 		
