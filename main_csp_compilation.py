@@ -26,6 +26,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
+from sklearn.naive_bayes import GaussianNB
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from matplotlib import rcParams
 import warnings
@@ -132,7 +134,7 @@ class CSP_Model:
 			clf.fit(X_train, y_train)
 		elif ML_model == "LDA": 
 			print("LDA Started")
-			clf = sklearn.lda.LDA()
+			clf = LinearDiscriminantAnalysis()
 			clf.fit(X_train, y_train)
 
 	
