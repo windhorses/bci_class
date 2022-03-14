@@ -1,10 +1,10 @@
 # Running Classifiers On Large Multiscale Temporal and Spectral Features
-by Team 13 
+This code builds on https://github.com/MultiScale-BCI/IV-2a. Team 13 added two new files- each file ran 6 classifers. 
 
 ## Getting Started
 
-First, download the source code.
-Then, download the dataset "Four class motor imagery (001-2014)" of the [BCI competition IV-2a](http://bnci-horizon-2020.eu/database/data-sets). Put all files of the dataset (A01T.mat-A09E.mat) into a subfolder within the project called 'dataset'. 
+First, download this source code.
+The following step was covered in Lab 4, but if you haven't done it, then download the dataset "Four class motor imagery (001-2014)" of the [BCI competition IV-2a](http://bnci-horizon-2020.eu/database/data-sets). Put all files of the dataset (A01T.mat-A09E.mat) into a subfolder within the project called 'dataset'. 
 
 ### Prerequisites
 
@@ -21,8 +21,6 @@ $ source activate msenv
 ```
 
 ### Recreate results
-
-This code builds off of https://github.com/MultiScale-BCI/IV-2a. 
 
 For the recreation of the CSP results run main_csp_compilation.py. 
 
